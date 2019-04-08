@@ -1,4 +1,4 @@
-type LeafletMap
+mutable struct LeafletMap
     layers::Vector{Layer}
     width::Int
     height::Int
@@ -23,9 +23,9 @@ type LeafletMap
 end
 
 function openurl(url::String)
-    @static if is_apple() run(`open $url`) end
-    @static if is_windows() run(`cmd /c start $url`) end
-    @static if is_linux()   run(`xdg-open $url`) end
+    @static if Sys.isapple() run(`open $url`) end
+    @static if Sys.iswindows() run(`cmd /c start $url`) end
+    @static if Sys.islinux()   run(`xdg-open $url`) end
 end
 
 function htmlhead(io::IOBuffer, p::LeafletMap)

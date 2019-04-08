@@ -10,7 +10,7 @@ module Provider
 
     import JSON
 
-    type LeafletProvider
+    mutable struct LeafletProvider
         url::String
         options::Dict{Symbol,Any}
     end

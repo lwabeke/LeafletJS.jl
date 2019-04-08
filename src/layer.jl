@@ -1,10 +1,10 @@
-type Layer{T}
-    data::T
+mutable struct Layer
+    data::Any
     options::Dict{Symbol, Any}
 end
 
-function Layer{T}(
-        data::T;
+function Layer(
+        data::Any;
         cmap::String = "nothing",
         color::Union{String,Symbol} = "blue",
         alpha::Union{Real,Symbol} = 0.5,
