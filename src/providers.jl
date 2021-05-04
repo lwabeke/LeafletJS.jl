@@ -24,7 +24,7 @@ module Provider
         for (i,(k,v)) in enumerate(provider.options)
             write(io, "$(k): ", JSON.json(v), i < noptions ? ",\n" : "\n}")
         end
-        String(io)
+        String(take!(io))
     end
 
     OSM() = LeafletProvider(

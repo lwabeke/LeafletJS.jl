@@ -6,7 +6,7 @@ mutable struct LeafletMap
     center::Vector{Float64}
     zoom::Int
     provider::Provider.LeafletProvider
-    kwargs::Vector
+    kwargs::Base.Iterators.Pairs{Union{}, Union{}, Tuple{}, NamedTuple{(), Tuple{}}}
 
     function LeafletMap(
             layers::Vector{Layer},
@@ -17,7 +17,7 @@ mutable struct LeafletMap
             provider::Provider.LeafletProvider = Provider.Stamen(),
             kwargs...
         )
-        new(layers, width, height, string(Base.Random.uuid4()),
+        new(layers, width, height, string(UUIDs.uuid4()),
             center, zoom, provider, kwargs)
     end
 end
@@ -71,7 +71,7 @@ function layeroptions2style(options::Dict{Symbol,Any}, i::Int, colortype::Symbol
         write(io, "fillColor: chroma.scale(\"accent\")(feature.properties.$color).hex()")
     end
     write(io, "}")
-    String(io)
+    String(take!(io))
 end
 
 function htmlscript(
@@ -81,8 +81,12 @@ function htmlscript(
     write(io, "L.tileLayer(", Provider.url(p.provider), ",",
                               Provider.options(p.provider), ").addTo(map);\n")
     for (i,layer) in enumerate(p.layers)
+        # For now took out passing geom as keyword argument, since it doesn't seem to be supported anymore
+        #write(io, "var data$i = ",
+        #    GeoJSON.write(layer.data, geom=layer.options[:geom]),
+        #";\n")
         write(io, "var data$i = ",
-            GeoJSON.geojson(layer.data, geom=layer.options[:geom]),
+            GeoJSON.write(layer.data),
         ";\n")
         if layer.options[:color] != "nothing"
             color = layer.options[:color]
@@ -197,16 +201,16 @@ function genhtml(p::LeafletMap, id::String; kwargs...)
     </body>
     </html>
     """)
-    String(io)
+    String(take!(io))
 end
 
 function writehtml(io::IO, p::LeafletMap)
-    print(io, genhtml(p, string(Base.Random.uuid4())))
+    print(io, genhtml(p, string(UUIDs.uuid4())))
     return
 end
 
 function Base.show(io::IO, ::MIME"text/html", p::LeafletMap)
-    display("text/html", genhtml(p, string(Base.Random.uuid4())))
+    display("text/html", genhtml(p, string(UUIDs.uuid4())))
 end
 
 function Base.show(io::IO, p::LeafletMap)
