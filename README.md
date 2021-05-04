@@ -14,3 +14,24 @@ LeafletMap([
     [center]
 )
 ```
+
+Example based on usage in
+https://nbviewer.jupyter.org/github/yeesian/LeafletExamples.jl/blob/master/notebook/leaflet-providers.ipynb
+
+This works in IJulia notebooks
+
+```julia
+using LeafletJS, GeoJSON
+;wget https://raw.githubusercontent.com/awoodruff/leaflet-intro/gh-pages/neighborhoods.geojson
+;wget https://raw.githubusercontent.com/awoodruff/leaflet-intro/gh-pages/rodents.geojson
+
+layers = Vector{Layer}(undef,0)
+nbhd = GeoJSON.parsefile("neighborhoods.geojson")
+rodents = GeoJSON.parsefile("rodents.geojson");
+push!(layers, Layer(nbhd))
+push!(layers, Layer(rodents))
+
+LeafletMap(layers, [42.35, -71.08])
+
+LeafletMap(layers, [42.35, -71.08], provider=Provider.Esri(:World_Imagery))
+
